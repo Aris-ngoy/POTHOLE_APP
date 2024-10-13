@@ -1,32 +1,27 @@
-# Turborepo react-native starter
+# AI Pothole Detection Apps (Backend, mobile app and web app)
 
-This is an official starter Turborepo.
+|-- apps
+    |-- backend -> Nextjs backend
+    |-- mobile -> React Native App
+    |-- process -> Flask App -> AI process server
 
-## Using this example
+
 
 Run the following command:
 
 ```sh
-npx create-turbo@latest -e with-react-native-web
+pnpm dev:web 
+pnpm dev:mobile
 ```
 
-## What's inside?
+# Flask App
+```sh
+cd app/process
 
-This Turborepo includes the following packages/apps:
+python3.10 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-### Apps and Packages
+flask --app app run   
+```
 
-- `native`: a [react-native](https://reactnative.dev/) app built with [expo](https://docs.expo.dev/)
-- `web`: a [Next.js](https://nextjs.org/) app built with [react-native-web](https://necolas.github.io/react-native-web/)
-- `@repo/ui`: a stub [react-native](https://reactnative.dev/) component library shared by both `web` and `native` applications
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [Expo](https://docs.expo.dev/) for native development
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [Prettier](https://prettier.io) for code formatting

@@ -20,6 +20,8 @@ build
 
 # python
 apps/process/uploads/
+apps/process/.env
+apps/process/data/firebase_cred.json
 
 # misc
 .DS_Store

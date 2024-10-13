@@ -3,3 +3,4 @@ ultralytics  # Commented out due to conflicts
 torch  # Added to resolve dependency conflicts
 firebase-admin
 python-dotenv
+gunicorn
