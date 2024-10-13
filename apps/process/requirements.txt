@@ -1,3 +1,4 @@
+# Python version: 3.10
 Flask
 ultralytics  # Commented out due to conflicts
 torch  # Added to resolve dependency conflicts
