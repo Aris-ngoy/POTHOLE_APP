@@ -16,6 +16,10 @@ build
 
 # expo
 .expo
+.venv/
+
+# python
+apps/process/uploads/
 
 # misc
 .DS_Store
