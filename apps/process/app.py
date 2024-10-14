@@ -58,17 +58,22 @@ def process_video(input_video, output_video):
         if not ret:
             break
 
-        # Perform inference with YOLOv8
-        results = model(frame)
+        # Process every 5th frame
+        if frame_number % 5 == 0:  # Only process every 5th frame
+            # Perform inference with YOLOv8
+            results = model(frame)
 
-        # Render results on the frame
-        annotated_frame = results[0].plot()
+            # Render results on the frame
+            annotated_frame = results[0].plot()
 
-        # Resize the annotated frame to ensure it fits the output video dimensions
-        annotated_frame = cv2.resize(annotated_frame, (int(cap.get(3)), int(cap.get(4))), interpolation=cv2.INTER_LINEAR)
+            # Resize the annotated frame to ensure it fits the output video dimensions
+            annotated_frame = cv2.resize(annotated_frame, (int(cap.get(3)), int(cap.get(4))), interpolation=cv2.INTER_LINEAR)
 
-        # Write the frame to the output video
-        out.write(annotated_frame)
+            # Write the frame to the output video
+            out.write(annotated_frame)
+        else:
+            # If not processing, write the original frame to maintain video length
+            out.write(frame)
 
     # Release resources
     cap.release()
