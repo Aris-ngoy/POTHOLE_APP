@@ -1,10 +1,11 @@
 # AI Pothole Detection Apps (Backend, mobile app and web app)
 
+```
 |-- apps
     |-- backend -> Nextjs backend
     |-- mobile -> React Native App
     |-- process -> Flask App -> AI process server
-
+```
 
 
 Run the following command:
