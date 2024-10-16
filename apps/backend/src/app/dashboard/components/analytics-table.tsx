@@ -4,7 +4,6 @@ import * as React from "react"
 import {
   CaretSortIcon,
   ChevronDownIcon,
-  DotsHorizontalIcon,
 } from "@radix-ui/react-icons"
 import {
   ColumnDef,
@@ -18,14 +17,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -39,17 +36,16 @@ import {
 } from "@/components/ui/table"
 import { useDatabase, useDatabaseListData } from "reactfire"
 import { query, ref } from "firebase/database"
+import { ImageVideoItem } from "./image-video-item"
 import { ProcessedFile } from "../models/process.file.model"
+import { DisplayCode } from "./display-code"
 
-export const columns: ColumnDef<ProcessedFile>[] = [
+const columns: ColumnDef<ProcessedFile>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
@@ -65,11 +61,9 @@ export const columns: ColumnDef<ProcessedFile>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "filename",
-    header: "Filename",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("filename")}</div>
-    ),
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("type")}</div>,
   },
   {
     accessorKey: "url",
@@ -82,42 +76,36 @@ export const columns: ColumnDef<ProcessedFile>[] = [
         <CaretSortIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("url")}</div>,
+    cell: ({ row }) => {
+        console.log(row.getValue("original_url"))
+        return <ImageVideoItem title={row.getValue("filename")} url={row.getValue("url")} type={row.getValue("type")} />
+    },
   },
   {
     accessorKey: "original_url",
     header: ({ column }) => (
       <Button
         variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Original URL
         <CaretSortIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("original_url")}</div>,
+    cell: ({ row }) => <ImageVideoItem title={row.getValue("filename")} url={row.getValue("original_url")} type={row.getValue("type")} />,
   },
   {
-    id: "actions",
-    enableHiding: false,
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <DotsHorizontalIcon className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>View Original Data</DropdownMenuItem>
-          <DropdownMenuItem>View Processed Data</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    accessorKey: "detections",
+    header: "Detections",
+    cell: ({ row }) => <DisplayCode code={JSON.stringify(row.getValue("detections"),null, 2)} title="Detections" />,
+  },
+  {
+    accessorKey: "filename",
+    header: "Filename",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("filename")}</div>,
   },
 ]
 
-export function DataTable() {
+export default function DataTable() {
   const database = useDatabase()
   const recordsRef = ref(database, 'processed_files')
   const recordsQuery = query(recordsRef)

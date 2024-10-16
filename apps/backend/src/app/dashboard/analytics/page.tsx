@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { DataTable } from "../components/analytics-table";
+import DataTable from "../components/analytics-table"; // Changed to default import
 
 export default function Analytics() {
     return(

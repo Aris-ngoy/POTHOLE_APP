@@ -4,6 +4,8 @@ import "./globals.css";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import FirebaseProviders from "@/providers/firebaseProviders";
 import FirebaseProviderInstance from "@/providers/firebaseProviderInstance";
+import { Toaster } from "@/components/ui/toaster"
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -36,6 +38,7 @@ export default function RootLayout({
                 </FirebaseProviderInstance>
               </FirebaseProviders>
           </ReactQueryProvider>
+          <Toaster />
       </body>
     </html>
   );

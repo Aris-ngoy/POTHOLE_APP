@@ -22,7 +22,7 @@ python3.10 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-flask --app app run   
+# flask --app app run   
 ```
 
 to run the flask app
