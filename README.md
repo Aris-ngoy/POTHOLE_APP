@@ -7,6 +7,10 @@
     |-- process -> Flask App -> AI process server
 ```
 
+install dependencies
+```sh
+pnpm install
+```
 
 Run the following command:
 
@@ -16,13 +20,13 @@ pnpm dev:mobile
 ```
 
 # Flask App
+install dependencies
 ```sh
 cd app/process
 
 python3.10 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-
 # flask --app app run   
 ```
 
