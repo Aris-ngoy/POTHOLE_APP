@@ -7,3 +7,4 @@ firebase-admin
 python-dotenv
 opencv-python-headless  # Use this instead of opencv-python to avoid GUI dependencies
 tqdm
+flask-cors

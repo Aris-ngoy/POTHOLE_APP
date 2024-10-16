@@ -1,4 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    async rewrites() {
+        return [
+          {
+            source: '/api/:path*',
+            destination: 'http://localhost:8000/:path*', // Proxy to the Flask server
+          },
+        ]
+      },
+};
 
 export default nextConfig;

@@ -1,7 +1,12 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { DataTable } from "../components/analytics-table";
+
 export default function Analytics() {
     return(
-        <div>
-            <h1>Analytics</h1>
-        </div>
+        <Card>
+            <CardContent className="p-4">
+                <DataTable />
+            </CardContent>
+        </Card>
     )
 }

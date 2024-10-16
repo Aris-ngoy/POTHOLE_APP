@@ -1,17 +1,21 @@
 import os
+import firebase_admin
+import cv2  # Add this import for video processing
+from tqdm import tqdm  # Add this import for progress bar
+from flask_cors import CORS  # Add this import
 from flask import Flask, request, jsonify
 from ultralytics import YOLO
-import firebase_admin
 from firebase_admin import credentials, storage
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-import cv2  # Add this import for video processing
-from tqdm import tqdm  # Add this import for progress bar
+from firebase_admin import db  # Change import to use Realtime Database
 
 # Load environment variables from .env file (optional but recommended)
 load_dotenv()
 
 app = Flask(__name__)
+# CORS(app)
+CORS(app, origins=["http://localhost:3000"])  # Add this line to enable CORS for all routes
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
@@ -25,12 +29,17 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Initialize Firebase
 firebase_credentials_path = os.getenv('FIREBASE_CREDENTIALS_PATH')  # Path to Firebase JSON
 firebase_storage_bucket = os.getenv('FIREBASE_STORAGE_BUCKET').replace('gs://', '')  # Remove 'gs://' prefix
+firebase_database_url = os.getenv('FIREBASE_DATABASE_URL')  # Add this line to get the database URL
 
 cred = credentials.Certificate(firebase_credentials_path)
 firebase_admin.initialize_app(cred, {
-    'storageBucket': firebase_storage_bucket
+    'storageBucket': firebase_storage_bucket,
+    'databaseURL': firebase_database_url  # Add this line to initialize the database URL
 })
 bucket = storage.bucket()
+
+# Initialize Realtime Database
+firebase_db = db.reference('/')  # Initialize Realtime Database reference
 
 # Initialize YOLOv8 model
 model = YOLO('data/best.pt')  # You can choose different YOLOv8 models
@@ -63,6 +72,16 @@ def process_video(input_video, output_video):
             # Perform inference with YOLOv8
             results = model(frame)
 
+            # Extract detection metadata
+            detections = []  # List to hold detection metadata
+            for result in results:
+                for detection in result.boxes:  # Assuming 'boxes' contains detection info
+                    detections.append({
+                        'class': detection.cls,  # Class label
+                        'confidence': detection.conf,  # Confidence score
+                        'bbox': detection.xyxy.tolist()  # Bounding box coordinates
+                    })
+
             # Render results on the frame
             annotated_frame = results[0].plot()
 
@@ -74,6 +93,13 @@ def process_video(input_video, output_video):
         else:
             # If not processing, write the original frame to maintain video length
             out.write(frame)
+
+    # Save detection metadata to Realtime Database
+    if detections:
+        firebase_db.child('detection_metadata').push({  # Change to use Realtime Database
+            'video_url': output_video,  # URL of the processed video
+            'detections': detections
+        })
 
     # Release resources
     cap.release()
@@ -96,6 +122,12 @@ def process_file():
         file.save(upload_path)
 
         try:
+            # Upload original file to Firebase Storage
+            blob_original = bucket.blob(f"original/{filename}")  # Change to upload original file
+            blob_original.upload_from_filename(upload_path)
+            blob_original.make_public()
+            original_public_url = blob_original.public_url  # Get public URL for original file
+
             # Check if the file is a video
             if filename.endswith(('mp4', 'avi')):  # Check for video file extensions
                 processed_filename = f"processed_{filename.rsplit('.', 1)[0]}.mp4"  # Change to .mp4 or appropriate format
@@ -104,9 +136,36 @@ def process_file():
                 # Process the video
                 process_video(upload_path, processed_path)
 
+                # Upload to Firebase Storage
+                blob = bucket.blob(f"processed/{processed_filename}")
+                blob.upload_from_filename(processed_path)
+                blob.make_public()
+
+                # Get public URL
+                public_url = blob.public_url  # Ensure public_url is defined here
+
+                # Store metadata in Realtime Database
+                metadata = {
+                    'filename': processed_filename,
+                    'url': public_url,  # Now public_url is defined
+                    'original_url': original_public_url,  # Add original URL to metadata
+                    'type': 'video'
+                }
+                firebase_db.child('processed_files').push(metadata)  # Change to use Realtime Database
+
             else:
                 # Process the file with YOLOv8 for images
                 results = model(upload_path)
+
+                # Extract detection metadata for images
+                detections = []  # List to hold detection metadata
+                for result in results:
+                    for detection in result.boxes:  # Assuming 'boxes' contains detection info
+                        detections.append({
+                            'class': detection.cls.item(),  # Convert Tensor to Python number
+                            'confidence': detection.conf.item(),  # Convert Tensor to Python number
+                            'bbox': detection.xyxy.tolist()  # Bounding box coordinates
+                        })
 
                 # Define processed filename with the same extension as the original
                 processed_filename = f"processed_{filename.rsplit('.', 1)[0]}.jpg"  # Change to .jpg or appropriate format
@@ -115,13 +174,23 @@ def process_file():
                 # Save processed file
                 results[0].save(processed_path)  # Ensure results[0] is in a compatible format
 
-            # Upload to Firebase Storage
-            blob = bucket.blob(f"processed/{processed_filename}")
-            blob.upload_from_filename(processed_path)
-            blob.make_public()
+                # Upload to Firebase Storage
+                blob = bucket.blob(f"processed/{processed_filename}")
+                blob.upload_from_filename(processed_path)
+                blob.make_public()
 
-            # Get public URL
-            public_url = blob.public_url
+                # Get public URL
+                public_url = blob.public_url  # Ensure public_url is defined here
+
+                # Store metadata in Realtime Database
+                metadata = {
+                    'filename': processed_filename,
+                    'url': public_url,  # Now public_url is defined
+                    'original_url': original_public_url,  # Add original URL to metadata
+                    'type': 'image',
+                    'detections': detections  # Add detections to image metadata
+                }
+                firebase_db.child('processed_files').push(metadata)  # Change to use Realtime Database
 
             # Clean up local files
             os.remove(upload_path)
