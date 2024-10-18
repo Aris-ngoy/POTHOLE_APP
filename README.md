@@ -1,5 +1,12 @@
 # AI Pothole Detection Apps (Backend, mobile app and web app)
 
+how to clone  the project
+```sh
+git clone https://github.com/Aris-ngoy/POTHOLE_APP.git
+cd POTHOLE_APP
+
+```
+
 ```
 |-- apps
     |-- backend -> Nextjs backend
