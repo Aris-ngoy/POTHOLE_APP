@@ -41,7 +41,7 @@ bucket = storage.bucket()
 # Initialize Realtime Database
 firebase_db = db.reference('/')  # Initialize Realtime Database reference
 
-# Initialize YOLOv8 model
+# Initialize YOLOv5 model
 model = YOLO('data/best.pt')  # You can choose different YOLOv8 models
 
 def allowed_file(filename):

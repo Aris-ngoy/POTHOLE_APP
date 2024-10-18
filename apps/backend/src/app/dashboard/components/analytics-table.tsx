@@ -106,16 +106,21 @@ const columns: ColumnDef<ProcessedFile>[] = [
 ]
 
 export default function DataTable() {
+
+  //Start Firebase realtime database
   const database = useDatabase()
   const recordsRef = ref(database, 'processed_files')
   const recordsQuery = query(recordsRef)
   const { status, data: records } = useDatabaseListData<ProcessedFile>(recordsQuery)
+  //End 
 
+  //Manipulate the table
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-
+  //Manipulate the table
+  
   const table = useReactTable({
     data: records ?? [],
     columns,

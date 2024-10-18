@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-
+//CONNECT TO FIREBASE
 export const firebaseConfig = {
   apiKey: "AIzaSyB9W3M8tTU1NFi_YJsZnokXn2HZMW4O3yU",
   authDomain: "potholes-e2266.firebaseapp.com",
