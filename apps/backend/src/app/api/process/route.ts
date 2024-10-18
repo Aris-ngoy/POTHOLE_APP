@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   if (!file) {
     return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
   }
-  const response = await fetch('http://localhost:8000/process', {
+  const response = await fetch('http://localhost:5000/process', {
     method: 'POST',
     body: formData,
   })  

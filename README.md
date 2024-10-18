@@ -40,7 +40,7 @@ pip install -r requirements.txt
 to run the flask app
 ```sh
 cd app/process
-source .venv/bin/activate
+
 gunicorn --timeout 120 app:app 
 ```
 
