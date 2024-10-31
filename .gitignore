@@ -23,6 +23,10 @@ apps/process/uploads/
 apps/process/.env
 apps/process/data/firebase_cred.json
 
+# ios and android
+apps/mobile/ios/*
+apps/mobile/android/*
+
 # misc
 .DS_Store
 *.pem
@@ -45,3 +49,4 @@ yarn-error.log*
 
 # Ignore environment configuration file
 .env
+

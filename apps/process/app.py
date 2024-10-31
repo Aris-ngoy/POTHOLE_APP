@@ -9,6 +9,7 @@ from firebase_admin import credentials, storage
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from firebase_admin import db  # Change import to use Realtime Database
+from datetime import datetime  # Add this import for datetime
 
 # Load environment variables from .env file (optional but recommended)
 load_dotenv()
@@ -147,9 +148,11 @@ def process_file():
                 # Store metadata in Realtime Database
                 metadata = {
                     'filename': processed_filename,
-                    'url': public_url,  # Now public_url is defined
-                    'original_url': original_public_url,  # Add original URL to metadata
-                    'type': 'video'
+                    'image': public_url,  # Now public_url is defined
+                    'processedImage': original_public_url,  # Add original URL to metadata
+                    'type': 'video',
+                    'timestamp': datetime.now().isoformat(),
+                    'source' : 'web'
                 }
                 firebase_db.child('processed_files').push(metadata)  # Change to use Realtime Database
 
@@ -185,9 +188,11 @@ def process_file():
                 # Store metadata in Realtime Database
                 metadata = {
                     'filename': processed_filename,
-                    'url': public_url,  # Now public_url is defined
-                    'original_url': original_public_url,  # Add original URL to metadata
+                    'processedImage': public_url,  # Now public_url is defined
+                    'image': original_public_url,  # Add original URL to metadata
                     'type': 'image',
+                    'source': 'web',
+                    'timestamp': datetime.now().isoformat(),
                     'detections': detections  # Add detections to image metadata
                 }
                 firebase_db.child('processed_files').push(metadata)  # Change to use Realtime Database

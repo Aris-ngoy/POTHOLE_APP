@@ -29,7 +29,7 @@ pnpm dev:mobile
 # Flask App
 install dependencies
 ```sh
-cd app/process
+cd apps/process
 
 python3.10 -m venv .venv
 source .venv/bin/activate
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 to run the flask app
 ```sh
-cd app/process
+cd apps/process
 for mac
 source .venv/bin/activate
 gunicorn --timeout 120 app:app 

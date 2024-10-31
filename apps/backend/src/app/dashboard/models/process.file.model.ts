@@ -1,9 +1,11 @@
 export interface ProcessedFile {
-    detections:   Detection[];
+    detections:   [];
     filename:     string;
-    original_url: string;
+    processedImage: string;
     type:         string;
-    url:          string;
+    image:        string;
+    source:       string;
+    timestamp:    string;
     NO_ID_FIELD:  string;
 }
 

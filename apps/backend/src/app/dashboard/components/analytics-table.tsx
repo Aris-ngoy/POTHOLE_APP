@@ -66,7 +66,12 @@ const columns: ColumnDef<ProcessedFile>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("type")}</div>,
   },
   {
-    accessorKey: "url",
+    accessorKey: "source",
+    header: "Source",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("source")}</div>,
+  },
+  {
+    accessorKey: "processedImage",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -77,12 +82,11 @@ const columns: ColumnDef<ProcessedFile>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-        console.log(row.getValue("original_url"))
-        return <ImageVideoItem title={row.getValue("filename")} url={row.getValue("url")} type={row.getValue("type")} />
+        return <ImageVideoItem title={row.getValue("filename")} url={row.getValue("processedImage")} type={row.getValue("type")} />
     },
   },
   {
-    accessorKey: "original_url",
+    accessorKey: "image",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -91,7 +95,7 @@ const columns: ColumnDef<ProcessedFile>[] = [
         <CaretSortIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <ImageVideoItem title={row.getValue("filename")} url={row.getValue("original_url")} type={row.getValue("type")} />,
+    cell: ({ row }) => <ImageVideoItem title={row.getValue("filename")} url={row.getValue("image")} type={row.getValue("type")} />,
   },
   {
     accessorKey: "detections",
@@ -191,7 +195,10 @@ export default function DataTable() {
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        ) as React.ReactNode}
                   </TableHead>
                 ))}
               </TableRow>
@@ -206,7 +213,7 @@ export default function DataTable() {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext()) as React.ReactNode}
                     </TableCell>
                   ))}
                 </TableRow>
