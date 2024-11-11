@@ -39,6 +39,7 @@ import { query, ref } from "firebase/database"
 import { ImageVideoItem } from "./image-video-item"
 import { ProcessedFile } from "../models/process.file.model"
 import { DisplayCode } from "./display-code"
+import { DisplayGeolocation } from "./display-geodata"
 
 const columns: ColumnDef<ProcessedFile>[] = [
   {
@@ -98,6 +99,11 @@ const columns: ColumnDef<ProcessedFile>[] = [
     cell: ({ row }) => <ImageVideoItem title={row.getValue("filename")} url={row.getValue("image")} type={row.getValue("type")} />,
   },
   {
+    accessorKey: "location",
+    header: "Location",
+    cell: ({ row }) => <DisplayGeolocation data={row.getValue("location")} />,
+  },
+  {
     accessorKey: "detections",
     header: "Detections",
     cell: ({ row }) => <DisplayCode code={JSON.stringify(row.getValue("detections"),null, 2)} title="Detections" />,
@@ -106,6 +112,19 @@ const columns: ColumnDef<ProcessedFile>[] = [
     accessorKey: "filename",
     header: "Filename",
     cell: ({ row }) => <div className="capitalize">{row.getValue("filename")}</div>,
+  },
+  {
+    accessorKey: "timestamp",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Timestamp
+        <CaretSortIcon className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div>{new Date(row.getValue("timestamp")).toLocaleString()}</div>,
   },
 ]
 
@@ -116,10 +135,12 @@ export default function DataTable() {
   const recordsRef = ref(database, 'processed_files')
   const recordsQuery = query(recordsRef)
   const { status, data: records } = useDatabaseListData<ProcessedFile>(recordsQuery)
-  //End 
-
+  //End
+  
   //Manipulate the table
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "timestamp", desc: true } // Sort by timestamp in descending order by default
+  ])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
@@ -134,6 +155,7 @@ export default function DataTable() {
       columnVisibility,
       rowSelection,
     },
+    enableRowSelection: true,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
