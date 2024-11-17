@@ -41,3 +41,32 @@ export async function GET(req: Request) {
         );
     }
 }
+
+export async function POST(req: Request) {
+    try {
+        const body = await req.json();
+        
+        const client = await MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017');
+        const db = client.db('potholes');
+        const collection = db.collection('potholes_data');
+
+        const result = await collection.insertOne({
+            timestamp: new Date(),
+            ...body,
+        });
+
+        await client.close();
+
+        return Response.json({
+            success: true,
+            insertedId: result.insertedId
+        }, { status: 201 });
+
+    } catch (error) {
+        console.error('Error adding data:', error);
+        return Response.json(
+            { error: 'Failed to add data' },
+            { status: 500 }
+        );
+    }
+}
