@@ -14,6 +14,7 @@ export async function GET(req: Request) {
 
         const data = await collection
             .find({})
+            .sort({ timestamp: -1 })
             .skip(skip)
             .limit(limit)
             .toArray();
