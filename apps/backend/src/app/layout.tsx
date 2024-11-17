@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import ReactQueryProvider from "@/providers/ReactQueryProvider";
-import FirebaseProviders from "@/providers/firebaseProviders";
-import FirebaseProviderInstance from "@/providers/firebaseProviderInstance";
 import { Toaster } from "@/components/ui/toaster"
+import Providers from "./dashboard/providers/provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,13 +29,9 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <ReactQueryProvider>
-              <FirebaseProviders>
-                <FirebaseProviderInstance>
-                  {children}
-                </FirebaseProviderInstance>
-              </FirebaseProviders>
-          </ReactQueryProvider>
+          <Providers>
+            {children}
+          </Providers>
           <Toaster />
       </body>
     </html>

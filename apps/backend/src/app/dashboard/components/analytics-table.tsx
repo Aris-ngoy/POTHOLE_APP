@@ -34,12 +34,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useDatabase, useDatabaseListData } from "reactfire"
-import { query, ref } from "firebase/database"
 import { ImageVideoItem } from "./image-video-item"
 import { ProcessedFile } from "../models/process.file.model"
 import { DisplayCode } from "./display-code"
 import { DisplayGeolocation } from "./display-geodata"
+import { useGetData } from "../hooks/useGetData"
 
 const columns: ColumnDef<ProcessedFile>[] = [
   {
@@ -129,13 +128,12 @@ const columns: ColumnDef<ProcessedFile>[] = [
 ]
 
 export default function DataTable() {
+  // Add state for pagination
+  const [currentPage, setCurrentPage] = React.useState(0)
+  const [pageSize, setPageSize] = React.useState(10) // Default page size
 
-  //Start Firebase realtime database
-  const database = useDatabase()
-  const recordsRef = ref(database, 'processed_files')
-  const recordsQuery = query(recordsRef)
-  const { status, data: records } = useDatabaseListData<ProcessedFile>(recordsQuery)
-  //End
+  // Update useGetData call to include pagination params
+  const { data: records, status } = useGetData(currentPage)
   
   //Manipulate the table
   const [sorting, setSorting] = React.useState<SortingState>([
@@ -147,7 +145,7 @@ export default function DataTable() {
   //Manipulate the table
   
   const table = useReactTable({
-    data: records ?? [],
+    data: records?.data ?? [],
     columns,
     state: {
       sorting,
@@ -164,9 +162,19 @@ export default function DataTable() {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newState = updater({
+          pageIndex: currentPage,
+          pageSize: pageSize
+        })
+        setCurrentPage(newState.pageIndex)
+        setPageSize(newState.pageSize)
+      }
+    },
   })
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <div>Loading...</div>
   }
 

@@ -27,7 +27,7 @@ const ImageVideoItem: FC<Props> = ({ type, title, url }) => {
           {type === 'image' ? (
             <div className="relative w-full h-[400px]">
               <Image
-                src={url}
+                src={`/api/file/${url}`}
                 alt={title}
                 fill
                 aria-describedby='image-description'
@@ -37,7 +37,7 @@ const ImageVideoItem: FC<Props> = ({ type, title, url }) => {
             </div>
           ) : (
             <video controls className="w-full">
-              <source src={url} type="video/mp4" />
+              <source src={`/api/file/${url}`} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           )}

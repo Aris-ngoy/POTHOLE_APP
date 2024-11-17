@@ -1,4 +1,4 @@
-import { BarChart2, FileText, Home } from 'lucide-react'
+import { BarChart2, Home } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import { FC } from 'react'
@@ -10,7 +10,6 @@ const SideBar: FC = () => {
             {[
               { name: "Home", icon: Home, href: "/dashboard" },
               { name: "Analytics", icon: BarChart2, href: "/dashboard/analytics" },
-              { name: "Reports", icon: FileText, href: "/dashboard/report" }
             ].map((item) => (
               <Link
                 key={item.name}
