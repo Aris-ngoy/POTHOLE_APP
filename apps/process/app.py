@@ -35,7 +35,7 @@ db = client.get_database('potholes')  # Replace with your database name
 fs = GridFSBucket(db, bucket_name='processed_files')
 
 # Initialize YOLOv5 model
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='data/best.pt')  # Change to YOLOv5
+model = torch.hub.load('yolov5', 'custom', path='data/best.pt', source='local')
 
 def allowed_file(filename):
     return '.' in filename and \
